@@ -1,0 +1,8 @@
+//
+// Created by Daniel Sameh on 5/20/2025.
+//
+
+#ifndef PROJECT_CLIPPINGSTRATEGY_H
+#define PROJECT_CLIPPINGSTRATEGY_H
+
+#endif //PROJECT_CLIPPINGSTRATEGY_H

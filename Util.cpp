@@ -1,3 +1,4 @@
+#include <Windows.h>
 struct Point {
     double x, y;
 

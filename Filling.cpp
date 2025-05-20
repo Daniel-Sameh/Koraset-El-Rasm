@@ -1,13 +1,18 @@
-void FloodFill(HDC hdc, Point p1, COLORREF bc, COLORREF fc) {
-     COLORREF c = GetPixel(hdc, p1.x, p1.y);
+void FloodFill(HDC& hdc, Point p, COLORREF& bc, COLORREF& fc) {
+     if (p.x>1000||p.y>1000||p.x<0||p.y<0)return;
+     COLORREF c = GetPixel(hdc, p.x, p.y);
      if (c == bc || c == fc) {
          return;
      }
-     SetPixel(hdc, p1.x, p1.y, fc);
-     FloodFill(hdc, Point(p1.x + 1, p1.y), bc, fc);
-     FloodFill(hdc, Point(p1.x - 1, p1.y), bc, fc);
-     FloodFill(hdc, Point(p1.x, p1.y + 1), bc, fc);
-     FloodFill(hdc, Point(p1.x, p1.y - 1), bc, fc);
+     SetPixel(hdc, p.x, p.y, fc);
+     Point p1= Point(p.x + 1, p.y);
+     Point p2= Point(p.x - 1, p.y);
+     Point p3= Point(p.x, p.y + 1);
+     Point p4= Point(p.x, p.y - 1);
+     FloodFill(hdc, p1, bc, fc);
+     FloodFill(hdc, p2, bc, fc);
+     FloodFill(hdc, p3, bc, fc);
+     FloodFill(hdc, p4, bc, fc);
 }
 
 void FloodFillWithStack(HDC hdc, Point p1, COLORREF bc, COLORREF fc) {
