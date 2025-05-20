@@ -10,7 +10,7 @@
 using namespace std;
 static int LCurrentDrawMode = 0,LCounter=0,RCurrentDrawMode=0,RCounter=0;
 
-static COLORREF bgColor = RGB(0, 0, 0);
+static COLORREF bgColor = RGB(255, 255, 255);
 static COLORREF PColor = RGB(0, 0, 0);
 static COLORREF FColor = RGB(255, 255, 255);
 static HCURSOR CURC = LoadCursor(NULL, IDC_ARROW);
@@ -57,7 +57,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                         cc.Flags = CC_FULLOPEN | CC_RGBINIT;
                         if (ChooseColor(&cc)) {
                             PColor = cc.rgbResult;
-                            InvalidateRect(hwnd, NULL, TRUE);
+//                            InvalidateRect(hwnd, NULL, TRUE);
                         }
                         break;
                     case 110:
@@ -69,7 +69,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                         cc.Flags = CC_FULLOPEN | CC_RGBINIT;
                         if (ChooseColor(&cc)) {
                             FColor = cc.rgbResult;
-                            InvalidateRect(hwnd, NULL, TRUE);
+//                            InvalidateRect(hwnd, NULL, TRUE);
                         }
                         break;
                     case 111: InvalidateRect(hwnd, NULL, TRUE); LCurrentDrawMode = 0, RCurrentDrawMode = 0; break;
@@ -111,7 +111,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     case 202:
                         fillStrategy = new FloodFillWithQueueStrategy();
                         context.setFillStrategy(fillStrategy);
-                    RCurrentDrawMode = 202;
+                        RCurrentDrawMode = 202;
                         break;
                     case 203:
                         fillStrategy = new BarycentricFillStrategy();
@@ -152,26 +152,39 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                 points.push_back(Point(LOWORD(lp), HIWORD(lp)));
                 LCounter++;
                 if (LCounter == 2) {
-                    hdc = GetDC(hwnd);
-                    context.draw(hdc, points, PColor);
-                    ReleaseDC(hwnd, hdc);
+//                    context.draw(hdc, points, PColor);
+                    thread([&](){
+                        hdc = GetDC(hwnd);
+                        context.draw(hdc, points, PColor);
+                        ReleaseDC(hwnd, hdc);
+                        points.clear();
+                    }).detach();
                     LCounter = 0;
-                    points.clear();
                 }
             }
 
             break;
         case WM_RBUTTONDOWN:
             if (RCurrentDrawMode>=200&&RCurrentDrawMode<203) {
-                RPoints[0].x = LOWORD(lp);
-                RPoints[0].y = HIWORD(lp);
-                hdc = GetDC(hwnd);
-                switch (RCurrentDrawMode) {
-                    case 200: FloodFill(hdc, RPoints[0], PColor, FColor); break;
-                    case 201: FloodFillWithStack(hdc, RPoints[0] ,PColor, FColor); break;
-                    case 202: FloodFillWithQueue(hdc, RPoints[0], PColor, FColor); break;
-                }
-                ReleaseDC(hwnd, hdc);
+//                RPoints[0].x = LOWORD(lp);
+//                RPoints[0].y = HIWORD(lp);
+                points.push_back(Point(LOWORD(lp), HIWORD(lp)));
+//                hdc = GetDC(hwnd);
+//                switch (RCurrentDrawMode) {
+//                    case 200: FloodFill(hdc, RPoints[0], PColor, FColor); break;
+//                    case 201: FloodFillWithStack(hdc, RPoints[0] ,PColor, FColor); break;
+//                    case 202: FloodFillWithQueue(hdc, RPoints[0], PColor, FColor); break;
+//                }
+//                ReleaseDC(hwnd, hdc);
+                RCounter++;
+
+                thread([&](){
+                    hdc = GetDC(hwnd);
+                    context.fill(hdc, points.back(), PColor, FColor);
+                    ReleaseDC(hwnd, hdc);
+                    points.clear();
+                    RCounter=0;
+                }).detach();
             }
             if (RCurrentDrawMode==203) {
                 RPoints[RCounter].x = LOWORD(lp);
@@ -184,8 +197,12 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                 }
 
             }
-        break;
-        
+            break;
+//        case WM_RBUTTONUP:
+//            if (RCounter==1){
+//
+//            }
+//            break;
         case WM_SETCURSOR:
             SetCursor(CURC);
         break;
