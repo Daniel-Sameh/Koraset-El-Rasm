@@ -1,96 +1,125 @@
 #include <Windows.h>
+#include<math.h>
+#include "Circle.cpp"
+static int currentDrawMode = 0,Counter=0;
 
-static int currentDrawMode = 0;
 static COLORREF bgColor = RGB(0, 0, 0);
 static COLORREF PColor = RGB(0, 0, 0);
 static HCURSOR CURC = LoadCursor(NULL, IDC_ARROW);
+struct Point {
+    double x, y;
 
+    Point(double x = 0, double y = 0) : x(x), y(y) {}
 
+    Point operator*(double a) const {
+        return Point(a * x, a * y);
+    }
+
+    Point operator+(const Point& p) const {
+        return Point(x + p.x, y + p.y);
+    }
+
+    Point operator-(const Point& p) const {
+        return Point(x - p.x, y - p.y);
+    }
+};
+
+static  Point Points[1000];
 LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 {
     HDC hdc;
     switch (m) {
         case WM_COMMAND:
             switch (LOWORD(wp)) {
+                case 100:
+                    currentDrawMode=100;
+                break;
 
                 case 101:
-                    currentDrawMode = 101;
-                CURC=LoadCursor(NULL, IDC_ARROW);
+                    CURC=LoadCursor(NULL, IDC_ARROW);
                 break;
 
                 case 102:
-                    currentDrawMode = 102;
-                CURC=LoadCursor(NULL, IDC_CROSS);
+                    CURC=LoadCursor(NULL, IDC_CROSS);
                 break;
 
                 case 103:
-                    currentDrawMode = 103;
-                CURC=LoadCursor(NULL, IDC_HAND);
+                    CURC=LoadCursor(NULL, IDC_HAND);
                 break;
 
                 case 104:
-                    currentDrawMode = 104;
-                CURC=LoadCursor(NULL, IDC_IBEAM);
+                    CURC=LoadCursor(NULL, IDC_IBEAM);
                 break;
 
                 case 105:
-                    currentDrawMode = 105;
-                CURC=LoadCursor(NULL, IDC_WAIT);
+                    CURC=LoadCursor(NULL, IDC_WAIT);
                 break;
 
                 case 106:
-                    currentDrawMode = 106;
-                bgColor = RGB(0, 0, 0);
-                InvalidateRect(hwnd, NULL, TRUE);
+                    bgColor = RGB(0, 0, 0);
+                    InvalidateRect(hwnd, NULL, TRUE);
                 break;
 
                 case 107:
-                    currentDrawMode = 107;
-                bgColor = RGB(255, 255, 255);
-                InvalidateRect(hwnd, NULL, TRUE);
+                    bgColor = RGB(255, 255, 255);
+                    InvalidateRect(hwnd, NULL, TRUE);
                 break;
 
                 case 108:
-                    currentDrawMode = 0;
-                PColor = RGB(0, 255, 0);
+                    PColor = RGB(0, 255, 0);
                 break;
 
+
                 case 109:
-                    currentDrawMode = 0;
-                PColor = RGB(0, 0, 255);
+                    PColor = RGB(0, 0, 255);
                 break;
 
                 case 110:
-                    currentDrawMode = 0;
-                PColor = RGB(255, 0, 0);
+                    PColor = RGB(255, 0, 0);
                 break;
 
                 case 111:
                     InvalidateRect(hwnd, NULL, TRUE);
-                currentDrawMode = 0;
+                    currentDrawMode = 0;
                 break;
             }
         break;
 
         case WM_ERASEBKGND:{
             HDC hdc = (HDC)wp;
-        RECT rc;
-        GetClientRect(hwnd, &rc);
-        HBRUSH hBrush = CreateSolidBrush(bgColor);
-        FillRect(hdc, &rc, hBrush);
-        DeleteObject(hBrush);
+            RECT rc;
+            GetClientRect(hwnd, &rc);
+            HBRUSH hBrush = CreateSolidBrush(bgColor);
+            FillRect(hdc, &rc, hBrush);
+            DeleteObject(hBrush);
         break;
     }
 
         case WM_LBUTTONDOWN:
-            hdc = GetDC(hwnd);
-            SetPixel(hdc, LOWORD(lp), HIWORD(lp), PColor);
-            ReleaseDC(hwnd, hdc);
+            if (currentDrawMode>=100||currentDrawMode<=105) {
+                if (Counter==0) {
+                    Points[Counter].x = LOWORD(lp);
+                    Points[Counter].y = HIWORD(lp);
+                    Counter++;
+                }
+                else if (Counter==1) {
+                    Points[Counter].x = LOWORD(lp);
+                    Points[Counter].y = HIWORD(lp);
+                    if (currentDrawMode==100) {
+                        hdc = GetDC(hwnd);
+                        int Radius=sqrt(pow(Points[0].x-Points[1].x,2)+pow(Points[0].y-Points[1].y,2));
+                        Drawcirclecart(hdc, Points[0].x, Points[0].y, Radius, PColor);
+                        ReleaseDC(hwnd, hdc);
+                    }
+                    Counter=0;
+                }
+
+            }
         break;
 
         case WM_SETCURSOR:
             SetCursor(CURC);
-            break;
+        break;
 
         case WM_CLOSE:
             DestroyWindow(hwnd); break;
@@ -120,7 +149,7 @@ CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hi, 0);
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU DrawMenu = CreatePopupMenu();
-    AppendMenu(DrawMenu, MF_STRING, 0000, "Draw Circle");
+    AppendMenu(DrawMenu, MF_STRING, 100, "Draw Circle");
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU CursorMenu = CreatePopupMenu();
     AppendMenu(CursorMenu, MF_STRING, 101, "Arrow");
