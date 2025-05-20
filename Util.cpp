@@ -14,17 +14,22 @@ struct Point {
     Point operator-(const Point& p) const {
         return Point(x - p.x, y - p.y);
     }
+
 };
+
+
 int Round(double x) {
     return static_cast<int>(x + 0.5);
 }
-void Draw8Points(HDC hdc,int xc,int yc,int x,int y,COLORREF c) {
-    SetPixel(hdc,xc+x,yc+y,c);
-    SetPixel(hdc,xc+x,yc-y,c);
-    SetPixel(hdc,xc-x,yc-y,c);
-    SetPixel(hdc,xc-x,yc+y,c);
-    SetPixel(hdc,xc-y,yc-x,c);
-    SetPixel(hdc,xc+y,yc-x,c);
-    SetPixel(hdc,xc+y,yc+x,c);
-    SetPixel(hdc,xc-y,yc+x,c);
+
+
+void Draw8Points(HDC hdc, Point p1, Point p2, COLORREF c) {
+    SetPixel(hdc, p1.x + p2.x, p1.y + p2.y, c);
+    SetPixel(hdc, p1.x + p2.x, p1.y - p2.y, c);
+    SetPixel(hdc, p1.x - p2.x, p1.y - p2.y, c);
+    SetPixel(hdc, p1.x - p2.x, p1.y + p2.y, c);
+    SetPixel(hdc, p1.x - p2.y, p1.y - p2.x, c);
+    SetPixel(hdc, p1.x + p2.y, p1.y - p2.x, c);
+    SetPixel(hdc, p1.x + p2.y, p1.y + p2.x, c);
+    SetPixel(hdc, p1.x - p2.y, p1.y + p2.x, c);
 }
