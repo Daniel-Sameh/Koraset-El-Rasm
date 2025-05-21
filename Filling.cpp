@@ -53,10 +53,10 @@ void FloodFillWithQueue(HDC hdc, Point p1, COLORREF bc, COLORREF fc) {
 }
 
 void FillBarycentric(HDC hdc, Point p1, Point p2, Point p3, COLORREF c) {
-     for (double t1 = 0; t1 <= 1; t1 += 0.01) {
-         for (double t2 = 0; t2 <= 1 - t1; t2 += 0.01) {
+     for (double t1 = 0; t1 <= 1; t1 += 0.003) {
+         for (double t2 = 0; t2 <= 1 - t1; t2 += 0.003) {
              Point p = p1 * t1 + p2 * t2 + p3 * (1 - t1 - t2);
-             SetPixel(hdc, p.x, p.y, c);
+             SetPixel(hdc, Round(p.x), Round(p.y), c);
          }
      }
 }

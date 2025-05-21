@@ -29,10 +29,9 @@ public:
             drawingStrategy->draw(hdc,p,c);
         }
     }
-    void fill(HDC hdc, Point start, COLORREF borderColor, COLORREF fillColor){
+    void fill(HDC hdc, vector<Point> p, COLORREF borderColor, COLORREF fillColor){
         if (fillStrategy){
-            vector<Point> points={start};
-            fillStrategy->fill(hdc, points, borderColor, fillColor);
+            fillStrategy->fill(hdc, p, borderColor, fillColor);
         }
     }
 //    void drawCircle(HDC hdc, Point p, int r, COLORREF c){

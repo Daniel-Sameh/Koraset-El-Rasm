@@ -116,7 +116,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     case 203:
                         fillStrategy = new BarycentricFillStrategy();
                         context.setFillStrategy(fillStrategy);
-
+                        RCurrentDrawMode = 203;
                         break;
 
                     default:
@@ -132,7 +132,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
         break;
 
         case WM_ERASEBKGND:{
-            HDC hdc = (HDC)wp;
+            hdc = (HDC)wp;
             RECT rc;
             GetClientRect(hwnd, &rc);
             HBRUSH hBrush = CreateSolidBrush(bgColor);
@@ -165,44 +165,22 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 
             break;
         case WM_RBUTTONDOWN:
-            if (RCurrentDrawMode>=200&&RCurrentDrawMode<203) {
-//                RPoints[0].x = LOWORD(lp);
-//                RPoints[0].y = HIWORD(lp);
+            if (RCurrentDrawMode>=200&&RCurrentDrawMode<=203) {
                 points.push_back(Point(LOWORD(lp), HIWORD(lp)));
-//                hdc = GetDC(hwnd);
-//                switch (RCurrentDrawMode) {
-//                    case 200: FloodFill(hdc, RPoints[0], PColor, FColor); break;
-//                    case 201: FloodFillWithStack(hdc, RPoints[0] ,PColor, FColor); break;
-//                    case 202: FloodFillWithQueue(hdc, RPoints[0], PColor, FColor); break;
-//                }
-//                ReleaseDC(hwnd, hdc);
                 RCounter++;
+
+                if (RCurrentDrawMode == 203 && RCounter < 3)
+                    break;
 
                 thread([&](){
                     hdc = GetDC(hwnd);
-                    context.fill(hdc, points.back(), PColor, FColor);
+                    context.fill(hdc, points, PColor, FColor);
                     ReleaseDC(hwnd, hdc);
                     points.clear();
                     RCounter=0;
                 }).detach();
             }
-            if (RCurrentDrawMode==203) {
-                RPoints[RCounter].x = LOWORD(lp);
-                RPoints[RCounter].y = HIWORD(lp);
-                if (++RCounter == 3) {
-                    hdc = GetDC(hwnd);
-                    FillBarycentric(hdc, RPoints[0], RPoints[1], RPoints[2], FColor);
-                    ReleaseDC(hwnd, hdc);
-                    RCounter=0;
-                }
-
-            }
             break;
-//        case WM_RBUTTONUP:
-//            if (RCounter==1){
-//
-//            }
-//            break;
         case WM_SETCURSOR:
             SetCursor(CURC);
         break;
@@ -228,7 +206,7 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.hInstance = hi;
     RegisterClass(&wc);
-    HWND hwnd = CreateWindow("MyClass", "Project", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+    HWND hwnd = CreateWindow("MyClass", "Koraset El Rasm", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hi, 0);
 
 
