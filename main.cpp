@@ -100,6 +100,21 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     context.setDrawingStrategy(drawingStrategy);
                     LCurrentDrawMode = 204;
                     break;
+                case 205:
+                    drawingStrategy = new ParametricLine();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 205;
+                    break;
+                case 206:
+                    drawingStrategy = new BresenhamLine();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 206;
+                    break;
+                case 207:
+                    drawingStrategy = new DDALine();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 207;
+                    break;
                 case 100:
                     fillStrategy = new RecFloodFillStrategy();
                     context.setFillStrategy(fillStrategy);
@@ -249,7 +264,17 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////
+
     HMENU DrawMenu = CreatePopupMenu();
+    HMENU LineMenu = CreatePopupMenu();
+    AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)LineMenu, "Line");
+
+    AppendMenu(LineMenu, MF_STRING, 205, "Parametric Line");
+    AppendMenu(LineMenu, MF_STRING, 206, "Bresenham Line");
+    AppendMenu(LineMenu, MF_STRING, 207, "DDA Line");
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU CircleMenu = CreatePopupMenu();
     AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)CircleMenu, "Circle");
 

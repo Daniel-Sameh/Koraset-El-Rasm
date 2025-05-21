@@ -2,11 +2,13 @@
 #define PROJECT_DRAWINGSTRATEGY_H
 #include <Windows.h>
 #include "../headers/Util.h"
+
 #include <vector>
 #include <thread>
 #include <memory>
 #include "../headers/Circle.h"
 #include "../headers/Curve.h"
+#include "../headers/Line.h"
 using namespace std;
 
 class DrawingStrategy {
@@ -95,6 +97,24 @@ class CardinalSpline : public DrawingStrategy {
 public:
     void draw(HDC hdc, vector<Point> p, COLORREF c) {
         DrawCardinalSpline(hdc, p, c, 1000, 1);
+    }
+};
+class ParametricLine: public DrawingStrategy{
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c){
+        Parametric_line(hdc,p,c);
+    }
+};
+class BresenhamLine: public DrawingStrategy{
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c){
+        Bresenham_Line(hdc,p,c);
+    }
+};
+class DDALine: public DrawingStrategy{
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c){
+        DDA_Line(hdc,p,c);
     }
 };
 
