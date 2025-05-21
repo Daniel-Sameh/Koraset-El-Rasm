@@ -9,5 +9,5 @@
 struct Point;
 int Round(double x);
 void Draw8Points(HDC hdc, Point p1, Point p2, COLORREF c);
-
+double distance(Point p1, Point p2) ;
 #endif //PROJECT_UTIL_H

@@ -28,106 +28,122 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
     switch (m) {
         case WM_COMMAND:
             switch (LOWORD(wp)) {
-
-                    case 101: CURC = LoadCursor(NULL, IDC_ARROW); break;
-                    case 102: CURC = LoadCursor(NULL, IDC_CROSS); break;
-                    case 103: CURC = LoadCursor(NULL, IDC_HAND); break;
-                    case 104: CURC = LoadCursor(NULL, IDC_IBEAM); break;
-                    case 105: CURC = LoadCursor(NULL, IDC_WAIT); break;
-                    case 106: bgColor = RGB(0, 0, 0); InvalidateRect(hwnd, NULL, TRUE); break;
-                    case 107: bgColor = RGB(255, 255, 255); InvalidateRect(hwnd, NULL, TRUE); break;
-                    case 108:
-                        ZeroMemory(&cc, sizeof(cc));
-                        cc.lStructSize = sizeof(cc);
-                        cc.hwndOwner = hwnd;
-                        cc.lpCustColors = clr;
-                        cc.rgbResult = bgColor;
-                        cc.Flags = CC_FULLOPEN | CC_RGBINIT;
-                        if (ChooseColor(&cc)) {
-                            bgColor = cc.rgbResult;
-                            InvalidateRect(hwnd, NULL, TRUE);
-                        }
-                        break;
-                    case 109:
-                        ZeroMemory(&cc, sizeof(cc));
-                        cc.lStructSize = sizeof(cc);
-                        cc.hwndOwner = hwnd;
-                        cc.lpCustColors = clr;
-                        cc.rgbResult = bgColor;
-                        cc.Flags = CC_FULLOPEN | CC_RGBINIT;
-                        if (ChooseColor(&cc)) {
-                            PColor = cc.rgbResult;
-//                            InvalidateRect(hwnd, NULL, TRUE);
-                        }
-                        break;
-                    case 110:
-                        ZeroMemory(&cc, sizeof(cc));
-                        cc.lStructSize = sizeof(cc);
-                        cc.hwndOwner = hwnd;
-                        cc.lpCustColors = clr;
-                        cc.rgbResult = bgColor;
-                        cc.Flags = CC_FULLOPEN | CC_RGBINIT;
-                        if (ChooseColor(&cc)) {
-                            FColor = cc.rgbResult;
-//                            InvalidateRect(hwnd, NULL, TRUE);
-                        }
-                        break;
-                    case 111: InvalidateRect(hwnd, NULL, TRUE); LCurrentDrawMode = 0, RCurrentDrawMode = 0; break;
-                    case 300:
-                        drawingStrategy = new CircleCartesian();
-                        context.setDrawingStrategy(drawingStrategy);
-                        LCurrentDrawMode=300;
-                        break;
-                    case 301:
-                        drawingStrategy = new CirclePolar();
-                        context.setDrawingStrategy(drawingStrategy);
-                        LCurrentDrawMode=301;
-                        break;
-                    case 302:
-                        drawingStrategy = new CirclePolarIterative();
-                        context.setDrawingStrategy(drawingStrategy);
-                        LCurrentDrawMode=302;
-                        break;
-                    case 303:
-                        drawingStrategy = new CircleBresenham();
-                        context.setDrawingStrategy(drawingStrategy);
-                        LCurrentDrawMode=303;
-                        break;
-                    case 304:
-                        drawingStrategy = new CircleBresenhamDDA();
-                        context.setDrawingStrategy(drawingStrategy);
-                        LCurrentDrawMode=304;
-                        break;
-                    case 200:
-                        fillStrategy = new RecFloodFillStrategy();
-                        context.setFillStrategy(fillStrategy);
-                        RCurrentDrawMode = 200;
-                        break;
-                    case 201:
-                        fillStrategy = new FloodFillWithStackStrategy();
-                        context.setFillStrategy(fillStrategy);
-                        RCurrentDrawMode = 201;
-                        break;
-                    case 202:
-                        fillStrategy = new FloodFillWithQueueStrategy();
-                        context.setFillStrategy(fillStrategy);
-                        RCurrentDrawMode = 202;
-                        break;
-                    case 203:
-                        fillStrategy = new BarycentricFillStrategy();
-                        context.setFillStrategy(fillStrategy);
-                        RCurrentDrawMode = 203;
-                        break;
-
-                    default:
-                        if (LOWORD(wp) >= 300 && LOWORD(wp) <= 304) {
-                            LCurrentDrawMode = LOWORD(wp);
-                        }
-                        if (LOWORD(wp) >= 200 && LOWORD(wp) <= 204) {
-                            RCurrentDrawMode = LOWORD(wp);
-                        }
+                case 901:CURC = LoadCursor(NULL, IDC_ARROW); break;
+                case 902:CURC = LoadCursor(NULL, IDC_CROSS); break;
+                case 903:CURC = LoadCursor(NULL, IDC_HAND); break;
+                case 904:CURC = LoadCursor(NULL, IDC_IBEAM); break;
+                case 905:CURC = LoadCursor(NULL, IDC_WAIT); break;
+                case 906:bgColor = RGB(0, 0, 0);InvalidateRect(hwnd, NULL, TRUE);break;
+                case 907:bgColor = RGB(255, 255, 255);InvalidateRect(hwnd, NULL, TRUE);break;
+                case 908:
+                    ZeroMemory(&cc, sizeof(cc));
+                    cc.lStructSize = sizeof(cc);
+                    cc.hwndOwner = hwnd;
+                    cc.lpCustColors = clr;
+                    cc.rgbResult = bgColor;
+                    cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+                    if (ChooseColor(&cc)) {
+                        bgColor = cc.rgbResult;
+                        InvalidateRect(hwnd, NULL, TRUE);
+                    }
                     break;
-                }
+                case 909:
+                    ZeroMemory(&cc, sizeof(cc));
+                    cc.lStructSize = sizeof(cc);
+                    cc.hwndOwner = hwnd;
+                    cc.lpCustColors = clr;
+                    cc.rgbResult = bgColor;
+                    cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+                    if (ChooseColor(&cc)) {
+                        PColor = cc.rgbResult;
+//                            InvalidateRect(hwnd, NULL, TRUE);
+                    }
+                    break;
+                case 910:
+                    ZeroMemory(&cc, sizeof(cc));
+                    cc.lStructSize = sizeof(cc);
+                    cc.hwndOwner = hwnd;
+                    cc.lpCustColors = clr;
+                    cc.rgbResult = bgColor;
+                    cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+                    if (ChooseColor(&cc)) {
+                        FColor = cc.rgbResult;
+//                            InvalidateRect(hwnd, NULL, TRUE);
+                    }
+                    break;
+                case 911:
+                    InvalidateRect(hwnd, NULL, TRUE);
+                    LCurrentDrawMode = 0, RCurrentDrawMode = 0;
+                    break;
+                case 200:
+                    drawingStrategy = new CircleCartesian();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 200;
+                    break;
+                case 201:
+                    drawingStrategy = new CirclePolar();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 201;
+                    break;
+                case 202:
+                    drawingStrategy = new CirclePolarIterative();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 202;
+                    break;
+                case 203:
+                    drawingStrategy = new CircleBresenham();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 203;
+                    break;
+                case 204:
+                    drawingStrategy = new CircleBresenhamDDA();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 204;
+                    break;
+                case 100:
+                    fillStrategy = new RecFloodFillStrategy();
+                    context.setFillStrategy(fillStrategy);
+                    RCurrentDrawMode = 100;
+                    break;
+                case 101:
+                    fillStrategy = new FloodFillWithStackStrategy();
+                    context.setFillStrategy(fillStrategy);
+                    RCurrentDrawMode = 101;
+                    break;
+                case 102:
+                    fillStrategy = new FloodFillWithQueueStrategy();
+                    context.setFillStrategy(fillStrategy);
+                    RCurrentDrawMode = 102;
+                    break;
+                case 303:
+                    fillStrategy = new BarycentricFillStrategy();
+                    context.setFillStrategy(fillStrategy);
+                    RCurrentDrawMode = 303;
+                    break;
+                case 301:
+                    drawingStrategy = new QuadraticCurve();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 301;
+                    break;
+                case 801:
+                    drawingStrategy = new MidPointBezier();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 801;
+                    RCurrentDrawMode = 199;
+                    break;
+                case 802:
+                    drawingStrategy = new RecursiveBezier();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 802;
+                    RCurrentDrawMode = 199;
+                    break;
+                case 400:
+                    drawingStrategy= new CardinalSpline();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 803;
+                    RCurrentDrawMode = 199;
+                    break;
+            }
 
         break;
 
@@ -141,46 +157,68 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
         break;
         }
 
-        case WM_LBUTTONDOWN:
-            if(LCurrentDrawMode>=300&&LCurrentDrawMode<=304){
+        case WM_LBUTTONDOWN: {
+            int req = LCurrentDrawMode / 100;
+            if (LCounter < req) {
                 points.push_back(Point(LOWORD(lp), HIWORD(lp)));
                 LCounter++;
             }
             break;
-        case WM_LBUTTONUP:
-            if (LCurrentDrawMode>=300&&LCurrentDrawMode<=304) {
+        }
+        case WM_LBUTTONUP: {
+            int req = LCurrentDrawMode / 100;
+            if (LCounter < req && LOWORD(lp) != points.back().x && HIWORD(lp) != points.back().y) {
                 points.push_back(Point(LOWORD(lp), HIWORD(lp)));
                 LCounter++;
-                if (LCounter == 2) {
-//                    context.draw(hdc, points, PColor);
-                    thread([&](){
-                        hdc = GetDC(hwnd);
-                        context.draw(hdc, points, PColor);
+            }
+            if (req == LCounter) {
+                vector<Point> copy(points);
+                hdc = GetDC(hwnd);
+                thread([=](){
+                    context.draw(hdc, copy, PColor);
+                    ReleaseDC(hwnd, hdc);
+                }).detach();
+                points.clear();
+                LCounter = 0;
+            }
+
+            break;
+        }
+
+        case WM_RBUTTONDOWN: {
+            int req = RCurrentDrawMode / 100;
+            if (req > RCounter) {
+                if (RCurrentDrawMode % 100 != 99) // if the click were to fill = save the position of the click
+                    points.push_back(Point(LOWORD(lp), HIWORD(lp)));
+                RCounter++;
+            }
+            break;
+        }
+
+
+        case WM_RBUTTONUP: {
+            int req = RCurrentDrawMode / 100;
+            if (req == RCounter) {
+                vector<Point> copy(points);
+                hdc = GetDC(hwnd);
+                if (RCurrentDrawMode % 100 == 99 && !copy.empty()) { // draw curve after the right click
+                    thread([=](){
+                        context.draw(hdc, copy, PColor);
                         ReleaseDC(hwnd, hdc);
-                        points.clear();
                     }).detach();
                     LCounter = 0;
                 }
-            }
-
-            break;
-        case WM_RBUTTONDOWN:
-            if (RCurrentDrawMode>=200&&RCurrentDrawMode<=203) {
-                points.push_back(Point(LOWORD(lp), HIWORD(lp)));
-                RCounter++;
-
-                if (RCurrentDrawMode == 203 && RCounter < 3)
-                    break;
-
-                thread([&](){
-                    hdc = GetDC(hwnd);
-                    context.fill(hdc, points, PColor, FColor);
-                    ReleaseDC(hwnd, hdc);
-                    points.clear();
-                    RCounter=0;
-                }).detach();
+                else { // fill after the right click
+                    thread([=](){
+                        context.fill(hdc, copy, PColor, FColor);
+                        ReleaseDC(hwnd, hdc);
+                    }).detach();
+                }
+                points.clear();
+                RCounter=0;
             }
             break;
+        }
         case WM_SETCURSOR:
             SetCursor(CURC);
         break;
@@ -213,31 +251,39 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU DrawMenu = CreatePopupMenu();
     HMENU CircleMenu = CreatePopupMenu();
-    AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)CircleMenu, "Draw Circle");
+    AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)CircleMenu, "Circle");
 
-    AppendMenu(CircleMenu, MF_STRING, 300, "Cartesian");
-    AppendMenu(CircleMenu, MF_STRING, 301, "Polar");
-    AppendMenu(CircleMenu, MF_STRING, 302, "Polar Iterative");
-    AppendMenu(CircleMenu, MF_STRING, 303, "Bresenham");
-    AppendMenu(CircleMenu, MF_STRING, 304, "Bresenham DDA");
+    AppendMenu(CircleMenu, MF_STRING, 200, "Cartesian");
+    AppendMenu(CircleMenu, MF_STRING, 201, "Polar");
+    AppendMenu(CircleMenu, MF_STRING, 202, "Polar Iterative");
+    AppendMenu(CircleMenu, MF_STRING, 203, "Bresenham");
+    AppendMenu(CircleMenu, MF_STRING, 204, "Bresenham DDA");
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    HMENU CurveMenu = CreatePopupMenu();
+    AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)CurveMenu, "Curve");
+
+    AppendMenu(CurveMenu, MF_STRING, 301, "Quadratic Curve");
+    AppendMenu(CurveMenu, MF_STRING, 801, "MidPoint Bezier");
+    AppendMenu(CurveMenu, MF_STRING, 802, "Recursive Bezier");
+    AppendMenu(CurveMenu, MF_STRING, 400, "Cardinal Spline");
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU FillMenu = CreatePopupMenu();
-    AppendMenu(FillMenu, MF_STRING, 200, "FloodFillRecursive");
-    AppendMenu(FillMenu, MF_STRING, 201, "FloodFillWithStack");
-    AppendMenu(FillMenu, MF_STRING, 202, "FloodFillWithQueue");
-    AppendMenu(FillMenu, MF_STRING, 203, "FillBarycentric");
+    AppendMenu(FillMenu, MF_STRING, 100, "FloodFillRecursive");
+    AppendMenu(FillMenu, MF_STRING, 101, "FloodFillWithStack");
+    AppendMenu(FillMenu, MF_STRING, 102, "FloodFillWithQueue");
+    AppendMenu(FillMenu, MF_STRING, 303, "FillBarycentric");
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU CursorMenu = CreatePopupMenu();
-    AppendMenu(CursorMenu, MF_STRING, 101, "Arrow");
-    AppendMenu(CursorMenu, MF_STRING, 102, "Cross");
-    AppendMenu(CursorMenu, MF_STRING, 103, "Hand");
-    AppendMenu(CursorMenu, MF_STRING, 104, "I-Beam");
-    AppendMenu(CursorMenu, MF_STRING, 105, "Wait");
+    AppendMenu(CursorMenu, MF_STRING, 901, "Arrow");
+    AppendMenu(CursorMenu, MF_STRING, 902, "Cross");
+    AppendMenu(CursorMenu, MF_STRING, 903, "Hand");
+    AppendMenu(CursorMenu, MF_STRING, 904, "I-Beam");
+    AppendMenu(CursorMenu, MF_STRING, 905, "Wait");
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU BackGroundMenu = CreatePopupMenu();
-    AppendMenu(BackGroundMenu, MF_STRING, 106, "Black");
-    AppendMenu(BackGroundMenu, MF_STRING, 107, "White");
-    AppendMenu(BackGroundMenu, MF_STRING, 108, "Custom");
+    AppendMenu(BackGroundMenu, MF_STRING, 906, "Black");
+    AppendMenu(BackGroundMenu, MF_STRING, 907, "White");
+    AppendMenu(BackGroundMenu, MF_STRING, 908, "Custom");
     ///////////////////////////////////////////////////////////////////////////////////////////
 //    HMENU ShapeCMenu = CreatePopupMenu();
 //    AppendMenu(ShapeCMenu, MF_STRING, 110, "Red");
@@ -250,8 +296,8 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
 //    AppendMenu(FillCMenu, MF_STRING, 113, "Blue");
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU ColorMenu = CreateMenu();
-    AppendMenu(ColorMenu, MF_STRING, 109, "Shape");
-    AppendMenu(ColorMenu, MF_STRING, 110, "Fill");
+    AppendMenu(ColorMenu, MF_STRING, 909, "Shape");
+    AppendMenu(ColorMenu, MF_STRING, 910, "Fill");
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU Menu = CreateMenu();
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)DrawMenu, "Draw");
@@ -260,7 +306,7 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)BackGroundMenu, "Background");
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)ColorMenu, "Color");
     ///////////////////////////////////////////////////////////////////////////////////////////
-    AppendMenu(Menu, MF_STRING, 111, "Clear");
+    AppendMenu(Menu, MF_STRING, 911, "Clear");
     ///////////////////////////////////////////////////////////////////////////////////////////
     SetMenu(hwnd, Menu);
 

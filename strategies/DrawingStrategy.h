@@ -6,6 +6,7 @@
 #include <thread>
 #include <memory>
 #include "../headers/Circle.h"
+#include "../headers/Curve.h"
 using namespace std;
 
 class DrawingStrategy {
@@ -66,6 +67,34 @@ public:
         int r = (int) sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 //        thread(DrawCirclePolarIterative, hdc, p[0], r, c).detach();
         DrawCirclePolarIterative(hdc, p[0], r, c);
+    }
+};
+
+class QuadraticCurve : public DrawingStrategy {
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) {
+        DrawQuadraticCurve(hdc, p, c, 1000);
+    }
+};
+
+class MidPointBezier : public DrawingStrategy {
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) {
+        RecursiveMidPointBezier(hdc, p, c);
+    }
+};
+
+class RecursiveBezier : public DrawingStrategy {
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) {
+        DrawBezierCurve(hdc, p, c, 1000);
+    }
+};
+
+class CardinalSpline : public DrawingStrategy {
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) {
+        DrawCardinalSpline(hdc, p, c, 1000, 1);
     }
 };
 

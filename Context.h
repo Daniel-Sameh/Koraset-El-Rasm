@@ -24,7 +24,7 @@ public:
 //    void setCircleStrategy(CircleStrategy* strategy){
 //        circleStrategy=strategy;
 //    }
-    void draw(HDC hdc, vector<Point>&p, COLORREF c){
+    void draw(HDC hdc, vector<Point> p, COLORREF c){
         if (drawingStrategy){
             drawingStrategy->draw(hdc,p,c);
         }

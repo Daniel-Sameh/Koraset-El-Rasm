@@ -23,6 +23,9 @@ int Round(double x) {
     return static_cast<int>(x + 0.5);
 }
 
+double distance(Point p1, Point p2) {
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
 
 void Draw8Points(HDC hdc, Point p1, Point p2, COLORREF c) {
     SetPixel(hdc, p1.x + p2.x, p1.y + p2.y, c);
