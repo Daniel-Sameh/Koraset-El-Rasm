@@ -5,6 +5,7 @@
 //#include "Util.cpp"
 #include "strategies/DrawingStrategy.h"
 #include "strategies/FillStrategy.h"
+#include "strategies/ClippingStrategy.h"
 //#include "strategies/CircleStrategy.h"
 using namespace std;
 
@@ -12,18 +13,18 @@ class Context {
 private:
     DrawingStrategy* drawingStrategy;
     FillStrategy* fillStrategy;
-//    CircleStrategy* circleStrategy;
+    ClippingStrategy* clippingStrategy;
 public:
-    Context(): drawingStrategy(nullptr), fillStrategy(nullptr){};
+    Context(): drawingStrategy(nullptr), fillStrategy(nullptr), clippingStrategy(new LineClippingStrategy()){};
     void setDrawingStrategy(DrawingStrategy* strategy){
         drawingStrategy=strategy;
     }
     void setFillStrategy(FillStrategy* strategy){
         fillStrategy=strategy;
     }
-//    void setCircleStrategy(CircleStrategy* strategy){
-//        circleStrategy=strategy;
-//    }
+    void setClippingStrategy(ClippingStrategy* strategy){
+        clippingStrategy=strategy;
+    }
     void draw(HDC hdc, vector<Point> p, COLORREF c){
         if (drawingStrategy){
             drawingStrategy->draw(hdc,p,c);
@@ -34,12 +35,22 @@ public:
             fillStrategy->fill(hdc, p, borderColor, fillColor);
         }
     }
-//    void drawCircle(HDC hdc, Point p, int r, COLORREF c){
-//        if(circleStrategy){
-//            circleStrategy->draw(hdc, p, r, c);
-//        }
-//    }
 
+    void showHelp(HWND hwnd){
+        if (!drawingStrategy&&!fillStrategy){
+            MessageBox(hwnd, "Please select a drawing or fill tool first.", "Error", MB_OK | MB_ICONERROR);
+        }
+        else if (drawingStrategy){
+            drawingStrategy->showHelp(hwnd);
+        }
+        else if (fillStrategy){
+            MessageBox(hwnd, "Fill strategy selected.", "Info", MB_OK | MB_ICONINFORMATION);
+        }
+    }
+
+    void clip(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom, double yTop, COLORREF c){
+        clippingStrategy->clip(hwnd, hdc, xLeft, xRight, yBottom, yTop, c);
+    }
 };
 
 

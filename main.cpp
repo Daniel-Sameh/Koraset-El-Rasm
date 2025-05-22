@@ -17,6 +17,9 @@ static HCURSOR CURC = LoadCursor(NULL, IDC_ARROW);
 static  Point RPoints[1000], LPoints[1000];
 vector<Point> points;
 bool isDrawing = true;
+Point ptStart = {0, 0};
+Point ptEnd = {0, 0};
+Point prevPtEnd={0,0};
 LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 {
     HDC hdc;
@@ -25,6 +28,8 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
     static Context context;
     static DrawingStrategy* drawingStrategy;
     static FillStrategy* fillStrategy;
+    static bool isClipping=false;
+    static bool isSelecting=false;
     switch (m) {
         case WM_COMMAND:
             switch (LOWORD(wp)) {
@@ -73,8 +78,20 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     break;
                 case 911:
                     InvalidateRect(hwnd, NULL, TRUE);
-                    LCurrentDrawMode = 0, RCurrentDrawMode = 0;
+//                    LCurrentDrawMode = 0, RCurrentDrawMode = 0;
+                    points.clear();
+                    clippingPoints.clear();
                     break;
+                case 912:
+                    CURC = LoadCursor(NULL, IDC_CROSS);
+                    SetCursor(CURC);
+                    isClipping=true;
+                    SetCapture(hwnd);
+                    break;
+                case 1234:
+                    context.showHelp(hwnd);
+                    break;
+                //////////////////////////////////////////////////
                 case 200:
                     drawingStrategy = new CircleCartesian();
                     context.setDrawingStrategy(drawingStrategy);
@@ -172,7 +189,54 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
         break;
         }
 
+        case WM_MOUSEMOVE:
+            if (isClipping && isSelecting) {
+                HDC hdc = GetDC(hwnd);
+                // Erase the previous rectangle
+                RECT prevRect = { static_cast<LONG>(ptStart.x), static_cast<LONG>(ptStart.y),
+                                  static_cast<LONG>(prevPtEnd.x), static_cast<LONG>(prevPtEnd.y) };
+                DrawFocusRect(hdc, &prevRect);
+
+                // Update the end point
+                ptEnd.x = LOWORD(lp);
+                ptEnd.y = HIWORD(lp);
+                prevPtEnd = ptEnd;
+
+                // Draw the new rectangle
+                RECT newRect = { static_cast<LONG>(ptStart.x), static_cast<LONG>(ptStart.y),
+                                 static_cast<LONG>(ptEnd.x), static_cast<LONG>(ptEnd.y) };
+                DrawFocusRect(hdc, &newRect);
+                ReleaseDC(hwnd, hdc);
+            }
+            break;
+        case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            if (isClipping) {
+                HPEN hPen = CreatePen(PS_DOT, 1, RGB(0, 0, 0));
+                HGDIOBJ hOldPen = SelectObject(hdc, hPen);
+                HBRUSH hBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+                HGDIOBJ hOldBrush = SelectObject(hdc, hBrush);
+                Rectangle(hdc, ptStart.x, ptStart.y, ptEnd.x, ptEnd.y);
+                SelectObject(hdc, hOldBrush);
+                SelectObject(hdc, hOldPen);
+                DeleteObject(hPen);
+            }
+            EndPaint(hwnd, &ps);
+        }
+            break;
+
         case WM_LBUTTONDOWN: {
+            if (isClipping){
+                ptStart.x = LOWORD(lp);
+                ptStart.y = HIWORD(lp);
+                ptEnd = ptStart;
+                prevPtEnd = ptStart;
+                isSelecting = true;
+                SetCapture(hwnd);
+                break;
+            }
             int req = LCurrentDrawMode / 100;
             if (LCounter < req) {
                 points.push_back(Point(LOWORD(lp), HIWORD(lp)));
@@ -181,6 +245,32 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
             break;
         }
         case WM_LBUTTONUP: {
+            if (isClipping && isSelecting) {
+                HDC hdc = GetDC(hwnd);
+                // Erase the current rectangle
+                RECT finalRect = { static_cast<LONG>(ptStart.x), static_cast<LONG>(ptStart.y),
+                                   static_cast<LONG>(ptEnd.x), static_cast<LONG>(ptEnd.y) };
+                DrawFocusRect(hdc, &finalRect);
+                InvalidateRect(hwnd, NULL, TRUE);
+                UpdateWindow(hwnd);
+
+                isSelecting = false;
+                isClipping = false;
+
+                // Normalize the rectangle coordinates
+                RECT clipRect;
+                clipRect.left = min(ptStart.x, ptEnd.x);
+                clipRect.top = min(ptStart.y, ptEnd.y);
+                clipRect.right = max(ptStart.x, ptEnd.x);
+                clipRect.bottom = max(ptStart.y, ptEnd.y);
+
+                context.clip(hwnd, hdc, clipRect.left, clipRect.right,  clipRect.bottom,clipRect.top, PColor);
+                ReleaseDC(hwnd, hdc);
+                CURC = LoadCursor(NULL, IDC_ARROW);
+                SetCursor(CURC);
+                ReleaseCapture();
+                break;
+            }
             int req = LCurrentDrawMode / 100;
             if (LCounter < req && LOWORD(lp) != points.back().x && HIWORD(lp) != points.back().y) {
                 points.push_back(Point(LOWORD(lp), HIWORD(lp)));
@@ -234,6 +324,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
             }
             break;
         }
+
         case WM_SETCURSOR:
             SetCursor(CURC);
         break;
@@ -332,6 +423,9 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)ColorMenu, "Color");
     ///////////////////////////////////////////////////////////////////////////////////////////
     AppendMenu(Menu, MF_STRING, 911, "Clear");
+    AppendMenu(Menu, MF_STRING, 912, "Clip");
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    AppendMenu(Menu, MF_STRING, 1234, "\u2757");
     ///////////////////////////////////////////////////////////////////////////////////////////
     SetMenu(hwnd, Menu);
 
