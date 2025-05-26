@@ -37,3 +37,9 @@ void Draw8Points(HDC hdc, Point p1, Point p2, COLORREF c) {
     SetPixel(hdc, p1.x + p2.y, p1.y + p2.x, c);
     SetPixel(hdc, p1.x - p2.y, p1.y + p2.x, c);
 }
+
+struct Line{
+    Point p1;
+    Point p2;
+    COLORREF c;
+};

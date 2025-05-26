@@ -7,12 +7,13 @@
 //#include "Filling.cpp"
 #include "Context.h"
 #include <bits/stdc++.h>
+
 using namespace std;
 static int LCurrentDrawMode = 0,LCounter=0,RCurrentDrawMode=0,RCounter=0;
 
 static COLORREF bgColor = RGB(255, 255, 255);
 static COLORREF PColor = RGB(0, 0, 0);
-static COLORREF FColor = RGB(255, 255, 255);
+COLORREF FColor = RGB(255, 255, 255);
 static HCURSOR CURC = LoadCursor(NULL, IDC_ARROW);
 static  Point RPoints[1000], LPoints[1000];
 vector<Point> points;
@@ -82,12 +83,8 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     points.clear();
                     clippingPoints.clear();
                     break;
-                case 912:
-                    CURC = LoadCursor(NULL, IDC_CROSS);
-                    SetCursor(CURC);
-                    isClipping=true;
-                    SetCapture(hwnd);
-                    break;
+//                case 912:
+
                 case 1234:
                     context.showHelp(hwnd);
                     break;
@@ -132,6 +129,22 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     context.setDrawingStrategy(drawingStrategy);
                     LCurrentDrawMode = 207;
                     break;
+
+                case 220:
+                    CURC = LoadCursor(NULL, IDC_CROSS);
+                    SetCursor(CURC);
+                    isClipping=true;
+                    SetCapture(hwnd);
+                    context.setClippingStrategy(new PointClippingStrategy);
+                    break;
+                case 221:
+                    CURC = LoadCursor(NULL, IDC_CROSS);
+                    SetCursor(CURC);
+                    isClipping=true;
+                    SetCapture(hwnd);
+                    context.setClippingStrategy(new LineClippingStrategy);
+                    break;
+
                 case 100:
                     fillStrategy = new RecFloodFillStrategy();
                     context.setFillStrategy(fillStrategy);
@@ -175,6 +188,31 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     LCurrentDrawMode = 803;
                     RCurrentDrawMode = 199;
                     break;
+                case 1001:
+                    drawingStrategy = new DrawPolygon();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 1001;
+                    RCurrentDrawMode = 199;
+                    break;
+                case 1002:
+                    drawingStrategy = new DrawPolygonConvexFill();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 1002;
+                    RCurrentDrawMode = 199;
+                    break;
+                case 1003:
+                    drawingStrategy = new DrawPolygonGeneralFill();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 1003;
+                    RCurrentDrawMode = 199;
+                    break;
+                case 913:
+//                    SavePixels(hwnd, bgColor, "pixels.txt");
+                    break;
+                case 914:
+//                    LoadPixels(hwnd, "pixels.txt");
+                    break;
+
             }
 
         break;
@@ -237,6 +275,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                 SetCapture(hwnd);
                 break;
             }
+
             int req = LCurrentDrawMode / 100;
             if (LCounter < req) {
                 points.push_back(Point(LOWORD(lp), HIWORD(lp)));
@@ -251,7 +290,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                 RECT finalRect = { static_cast<LONG>(ptStart.x), static_cast<LONG>(ptStart.y),
                                    static_cast<LONG>(ptEnd.x), static_cast<LONG>(ptEnd.y) };
                 DrawFocusRect(hdc, &finalRect);
-                InvalidateRect(hwnd, NULL, TRUE);
+//                InvalidateRect(hwnd, NULL, TRUE);
                 UpdateWindow(hwnd);
 
                 isSelecting = false;
@@ -383,6 +422,13 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(CurveMenu, MF_STRING, 802, "Recursive Bezier");
     AppendMenu(CurveMenu, MF_STRING, 400, "Cardinal Spline");
     ///////////////////////////////////////////////////////////////////////////////////////////
+    HMENU PolygonMenu = CreatePopupMenu();
+    AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)PolygonMenu, "Polygon");
+
+    AppendMenu(PolygonMenu, MF_STRING, 1001, "Polygon");
+    AppendMenu(PolygonMenu, MF_STRING, 1002, "Convex Fill");
+    AppendMenu(PolygonMenu, MF_STRING, 1003, "General Fill");
+    ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU FillMenu = CreatePopupMenu();
     AppendMenu(FillMenu, MF_STRING, 100, "FloodFillRecursive");
     AppendMenu(FillMenu, MF_STRING, 101, "FloodFillWithStack");
@@ -415,17 +461,27 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(ColorMenu, MF_STRING, 909, "Shape");
     AppendMenu(ColorMenu, MF_STRING, 910, "Fill");
     ///////////////////////////////////////////////////////////////////////////////////////////
+    HMENU FileMenu = CreateMenu();
+    AppendMenu(FileMenu, MF_STRING, 913, "Save");
+    AppendMenu(FileMenu, MF_STRING, 914, "Load");
+    //////////////////////////////////////////////////////////////////////////////////////////
     HMENU Menu = CreateMenu();
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)DrawMenu, "Draw");
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)FillMenu, "Fill");
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)CursorMenu, "Cursor");
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)BackGroundMenu, "Background");
     AppendMenu(Menu, MF_POPUP, (UINT_PTR)ColorMenu, "Color");
+    AppendMenu(Menu, MF_POPUP, (UINT_PTR)FileMenu, "File");
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    HMENU ClipMenu = CreateMenu();
+    AppendMenu(ClipMenu, MF_STRING, 220, "Point Clip");
+    AppendMenu(ClipMenu, MF_STRING, 221,"Line Clip");
+    AppendMenu(ClipMenu, MF_STRING, 222, "Polygon Clip");
     ///////////////////////////////////////////////////////////////////////////////////////////
     AppendMenu(Menu, MF_STRING, 911, "Clear");
-    AppendMenu(Menu, MF_STRING, 912, "Clip");
+    AppendMenu(Menu, MF_POPUP, (UINT_PTR)ClipMenu, "Clip");
     ///////////////////////////////////////////////////////////////////////////////////////////
-    AppendMenu(Menu, MF_STRING, 1234, "\u2757");
+    AppendMenu(Menu, MF_STRING, 1234, "Guide");
     ///////////////////////////////////////////////////////////////////////////////////////////
     SetMenu(hwnd, Menu);
 

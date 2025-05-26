@@ -9,7 +9,7 @@ union Outcode{ //for Clipping
     struct{ unsigned left:1, right:1, bottom:1, top:1; };
     unsigned all:4;
 };
-vector<pair<Point,Point>>clippingPoints;
+vector<Line>clippingPoints;
 ///Utility Functions:
 Outcode getOutCode(double x, double y, double xLeft, double xRight, double yBottom, double yTop){
     Outcode out; out.all=0;
@@ -58,15 +58,16 @@ void clipWindow(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom,
         MessageBox(hwnd, "Please draw lines to clip", "No lines was found", MB_ICONSTOP);
         return;
     }
-    vector<pair<Point,Point>>oldPoints=clippingPoints;
+    vector<Line>newPoints;
     bool clip=false;
-    for(auto&[p1,p2]:clippingPoints){
+    for(auto&[p1,p2,c]:clippingPoints){
         clip=cohenClipping(p1, p2, xLeft, xRight, yBottom, yTop);
         if (clip){
             SetPixel(hdc, Round(p1.x), Round(p1.y), RGB(0, 0, 0));
             SetPixel(hdc, Round(p2.x), Round(p2.y), RGB(0, 0, 0));
             DDA_Line(hdc, {p1,p2}, c);
+            newPoints.emplace_back(p1, p2,c);
         }
     }
-    clippingPoints=oldPoints;
+    clippingPoints=newPoints;
 }

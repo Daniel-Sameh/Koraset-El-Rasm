@@ -10,6 +10,7 @@
 #include "../headers/Curve.h"
 #include "../headers/Line.h"
 #include "../headers/Clipping.h"
+#include "../headers/Polygon.h"
 using namespace std;
 
 class DrawingStrategy {
@@ -126,7 +127,7 @@ public:
 class ParametricLine: public DrawingStrategy{
 public:
     void draw(HDC hdc, vector<Point> p, COLORREF c) override{
-        clippingPoints.emplace_back(p[0],p[1]);
+        clippingPoints.emplace_back(p[0],p[1],c);
         Parametric_line(hdc,p,c);
     }
     void showHelp(HWND hwnd) override{
@@ -136,7 +137,7 @@ public:
 class BresenhamLine: public DrawingStrategy{
 public:
     void draw(HDC hdc, vector<Point> p, COLORREF c) override{
-        clippingPoints.emplace_back(p[0],p[1]);
+        clippingPoints.emplace_back(p[0],p[1],c);
         Bresenham_Line(hdc,p,c);
     }
     void showHelp(HWND hwnd) override{
@@ -146,7 +147,7 @@ public:
 class DDALine: public DrawingStrategy{
 public:
     void draw(HDC hdc, vector<Point> p, COLORREF c) override{
-        clippingPoints.emplace_back(p[0],p[1]);
+        clippingPoints.emplace_back(p[0],p[1], c);
         DDA_Line(hdc,p,c);
     }
     void showHelp(HWND hwnd) override{
@@ -154,4 +155,33 @@ public:
     }
 };
 
+class DrawPolygon : public DrawingStrategy {
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) override {
+        Draw_Polygon(hdc, p, c);
+    }
+    void showHelp(HWND hwnd) override{
+        MessageBox(hwnd, "Left click to give the points of the shape you want to draw and Right click to draw", "DDA Line Drawing", MB_OK | MB_ICONINFORMATION);
+    }
+};
+
+class DrawPolygonConvexFill : public DrawingStrategy {
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) override {
+        DrawPolygon_ConvexFill(hdc, p, c);
+    }
+    void showHelp(HWND hwnd) override{
+        MessageBox(hwnd, "Left click to give the points of the shape you want to draw and Right click to draw", "DDA Line Drawing", MB_OK | MB_ICONINFORMATION);
+    }
+};
+
+class DrawPolygonGeneralFill : public DrawingStrategy {
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) override {
+        DrawPolygon_GeneralFill(hdc, p, c);
+    }
+    void showHelp(HWND hwnd) override{
+        MessageBox(hwnd, "Left click to give the points of the shape you want to draw and Right click to draw", "DDA Line Drawing", MB_OK | MB_ICONINFORMATION);
+    }
+};
 #endif

@@ -15,7 +15,7 @@ private:
     FillStrategy* fillStrategy;
     ClippingStrategy* clippingStrategy;
 public:
-    Context(): drawingStrategy(nullptr), fillStrategy(nullptr), clippingStrategy(new LineClippingStrategy()){};
+    Context(): drawingStrategy(nullptr), fillStrategy(nullptr), clippingStrategy(nullptr){};
     void setDrawingStrategy(DrawingStrategy* strategy){
         drawingStrategy=strategy;
     }
