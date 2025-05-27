@@ -30,6 +30,7 @@ class PointClippingStrategy: public ClippingStrategy{
 public:
     PointClippingStrategy(){}
     void clip(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom, double yTop, COLORREF c) override {
+        clipWindow(hwnd, hdc, xLeft, xRight, yBottom, yTop, c, false);
         // 1) get client size
         RECT rcClient;
         GetClientRect(hwnd, &rcClient);

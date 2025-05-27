@@ -55,7 +55,7 @@ void DrawPolygon_ConvexFill(HDC hdc, vector<Point> &v, COLORREF c) {
     for (int i = 0; i < N; ++i) {
         if (tbl[i].xLeft < tbl[i].xRight) {
             vector<Point> p = {{(double) tbl[i].xLeft, (double) i}, {(double) tbl[i].xRight, (double) i}};
-            clippingPoints.emplace_back(p[0], p[1], c);
+            clippingPoints.emplace_back(p[0], p[1], FColor);
             DDA_Line(hdc, p, FColor);
         }
     }

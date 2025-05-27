@@ -53,7 +53,7 @@ bool cohenClipping(Point&p1, Point&p2, double xLeft, double xRight, double yBott
     return true;
 }
 ///Main Clip:
-void clipWindow(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom, double yTop, COLORREF c){
+void clipWindow(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom, double yTop, COLORREF c, bool draw=true){
     if (clippingPoints.empty()){
         MessageBox(hwnd, "Please draw lines to clip", "No lines was found", MB_ICONSTOP);
         return;
@@ -63,11 +63,25 @@ void clipWindow(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom,
     for(auto&[p1,p2,c]:clippingPoints){
         clip=cohenClipping(p1, p2, xLeft, xRight, yBottom, yTop);
         if (clip){
-            SetPixel(hdc, Round(p1.x), Round(p1.y), RGB(0, 0, 0));
-            SetPixel(hdc, Round(p2.x), Round(p2.y), RGB(0, 0, 0));
-            DDA_Line(hdc, {p1,p2}, c);
+            if(draw){
+                SetPixel(hdc, Round(p1.x), Round(p1.y), RGB(0, 0, 0));
+                SetPixel(hdc, Round(p2.x), Round(p2.y), RGB(0, 0, 0));
+                DDA_Line(hdc, {p1,p2}, c);
+            }
             newPoints.emplace_back(p1, p2,c);
         }
     }
     clippingPoints=newPoints;
 }
+
+//void clipWindowWithoutDrawing(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom, double yTop, COLORREF c){
+//    vector<Line>newPoints;
+//    bool clip=false;
+//    for(auto&[p1,p2,c]:clippingPoints){
+//        clip=cohenClipping(p1, p2, xLeft, xRight, yBottom, yTop);
+//        if (clip){
+//            newPoints.emplace_back(p1, p2,c);
+//        }
+//    }
+//    clippingPoints=newPoints;
+//}

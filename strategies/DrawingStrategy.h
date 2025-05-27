@@ -161,7 +161,7 @@ public:
         Draw_Polygon(hdc, p, c);
     }
     void showHelp(HWND hwnd) override{
-        MessageBox(hwnd, "Left click to give the points of the shape you want to draw and Right click to draw", "DDA Line Drawing", MB_OK | MB_ICONINFORMATION);
+        MessageBox(hwnd, "Left click on multiple points then right click to draw a polygon!", "Draw Polygon:", MB_OK | MB_ICONINFORMATION);
     }
 };
 
@@ -171,7 +171,7 @@ public:
         DrawPolygon_ConvexFill(hdc, p, c);
     }
     void showHelp(HWND hwnd) override{
-        MessageBox(hwnd, "Left click to give the points of the shape you want to draw and Right click to draw", "DDA Line Drawing", MB_OK | MB_ICONINFORMATION);
+        MessageBox(hwnd, "Left click on multiple points then right click to draw a convex filled polygon!", "Draw Convex Filled Polygon:", MB_OK | MB_ICONINFORMATION);
     }
 };
 
@@ -181,7 +181,7 @@ public:
         DrawPolygon_GeneralFill(hdc, p, c);
     }
     void showHelp(HWND hwnd) override{
-        MessageBox(hwnd, "Left click to give the points of the shape you want to draw and Right click to draw", "DDA Line Drawing", MB_OK | MB_ICONINFORMATION);
+        MessageBox(hwnd, "Left click on multiple points then right click to draw a general filled polygon!", "Draw General Filled Polygon:", MB_OK | MB_ICONINFORMATION);
     }
 };
 #endif
