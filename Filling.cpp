@@ -1,3 +1,4 @@
+#include<omp.h>
 void FloodFill(HDC& hdc, Point p, COLORREF& bc, COLORREF& fc) {
      if (p.x>1000||p.y>1000||p.x<0||p.y<0)return;
      COLORREF c = GetPixel(hdc, p.x, p.y);
@@ -59,4 +60,63 @@ void FillBarycentric(HDC hdc, Point p1, Point p2, Point p3, COLORREF c) {
              SetPixel(hdc, Round(p.x), Round(p.y), c);
          }
      }
+}
+void FillQuarterCircleLines(HDC hdc,Point p1,int r,COLORREF bc,COLORREF fc) {
+    DrawCircleBresenhamDDA(hdc,p1,r, bc);
+    cout<<"Enter The desired quarter:"<<endl;
+    cout<<"1 for Top right\n";
+    cout<<"2 for Top left\n";
+    cout<<"3 for Bottom left\n";
+    cout<<"4 for Bottom right\n";
+    int quarter;
+    cin>>quarter;
+    auto[xc,yc]=p1;
+    for (int y = 0; y <= r; y++) {
+        int x=sqrt(r*r-y*y);
+        switch (quarter) {
+            case 1://top right
+
+                DDA_Line(hdc, {{xc, yc - y}, {xc + x, yc - y}}, fc);// yc-y 34an tetla3 lfo2
+                break;
+            case 2://top left
+                DDA_Line(hdc, {{xc, yc - y}, {xc - x, yc - y}}, fc);
+                break;
+            case 3://bottom left
+                DDA_Line(hdc, {{xc, yc + y}, {xc - x, yc + y}},fc);
+                break;
+            case 4://bottom right
+                DDA_Line(hdc, {{xc, yc + y}, {xc + x, yc + y}},fc);
+                break;
+            default:
+                MessageBox(NULL, "Invalid Quarter", "Error", MB_OK);
+        }
+    }
+}
+
+void FillWithHermiteCurves(HDC hdc, int xLeft, int xRight, int yBottom, int yTop, COLORREF fillColor){
+    if(xLeft>xRight){
+        swap(xLeft, xRight);
+    }
+    if (yBottom > yTop)
+        swap(yBottom, yTop);
+
+    #pragma omp parallel for shared(xLeft, xRight)
+    for (int i=yBottom; i<=yTop; ++i){
+        Point p[]={{(double) xLeft,(double) i},{1,1},{(double) xRight,(double) i},{1,1}};
+        #pragma omp critical
+        DrawHermiteCurve(hdc,p,fillColor,2000);
+    }
+}
+
+void FillWithBezierCurves(HDC hdc, int xLeft, int xRight, int yBottom, int yTop, COLORREF fillColor){
+    if(xLeft>xRight){
+        swap(xLeft, xRight);
+    }
+    if (yBottom > yTop) {
+        swap(yBottom, yTop);
+    }
+    for(int i=xLeft; i<=xRight; ++i){
+        vector<Point>points={{(double) i, (double) yBottom}, {(double) i, (double) yTop}};
+        DrawBezierCurve(hdc, points, fillColor, 1000);
+    }
 }

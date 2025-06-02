@@ -1,12 +1,13 @@
 extern COLORREF FColor;
 
 void Draw_Polygon(HDC hdc, vector<Point> v, COLORREF c) {
-    v.push_back(v.front());
-    for (int i = 1; i < v.size(); ++i) {
-        vector<Point> p = {v[i - 1], v[i]};
-        clippingPoints.emplace_back(p[0],p[1], c);
-        DDA_Line(hdc, p, c);
+    Point p1 = v.back();
+    for (int i = 0; i < v.size(); ++i) {
+        clippingPoints.emplace_back(p1,v[i], c);
+        DDA_Line(hdc, {p1, v[i]}, c);
+        p1 = v[i];
     }
+    clippingPolygons.push_back(v);
 }
 
 const int N = 800;
@@ -46,10 +47,11 @@ void DrawPolygon_ConvexFill(HDC hdc, vector<Point> &v, COLORREF c) {
 
     EdgeTableConvex tbl;
     initEdgeTableConvex(tbl);
-    v.push_back(v.front());
+    Point p1 = v.back();
 
-    for (int i = 1; i < v.size(); ++i) {
-        EdgeToTableConvex(v[i - 1], v[i], tbl);
+    for (int i = 0; i < v.size(); ++i) {
+        EdgeToTableConvex(p1, v[i], tbl);
+        p1 = v[i];
     }
 
     for (int i = 0; i < N; ++i) {
@@ -60,6 +62,7 @@ void DrawPolygon_ConvexFill(HDC hdc, vector<Point> &v, COLORREF c) {
         }
     }
     Draw_Polygon(hdc, v, c);
+    clippingPolygons.push_back(v);
 }
 
 struct Node {
@@ -102,11 +105,12 @@ void DrawLines(HDC hdc, list<Node> lst, COLORREF c, int y) {
 }
 
 void DrawPolygon_GeneralFill(HDC hdc, vector<Point> &v, COLORREF c) {
-    v.push_back(v.front());
+    Point p = v.back();
     // initializing the edge table
     EdgeTable tbl;
-    for (int i = 1; i < v.size(); ++i) {
-        EdgeToTable(v[i - 1], v[i], tbl);
+    for (int i = 0; i < v.size(); ++i) {
+        EdgeToTable(p, v[i], tbl);
+        p = v[i];
     }
 
     int y = 0;
@@ -132,4 +136,5 @@ void DrawPolygon_GeneralFill(HDC hdc, vector<Point> &v, COLORREF c) {
         }
     }
     Draw_Polygon(hdc, v, c);
+    clippingPolygons.push_back(v);
 }

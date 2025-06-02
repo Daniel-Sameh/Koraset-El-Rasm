@@ -24,6 +24,7 @@ public:
         InvalidateRect(hwnd, NULL, TRUE);
         UpdateWindow(hwnd);
         clipWindow(hwnd, hdc, xLeft, xRight, yBottom, yTop, c);
+        clippingPolygons.clear();
     }
 };
 class PointClippingStrategy: public ClippingStrategy{
@@ -62,6 +63,16 @@ public:
 
         // 5) force an immediate WM_PAINT (optional)
         UpdateWindow(hwnd);
+
+        clippingPolygons.clear();
     }
 };
-#endif //PROJECT_CLIPPINGSTRATEGY_H
+
+class PolygonClipping : public ClippingStrategy {
+    void clip(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom, double yTop, COLORREF c) override {
+        InvalidateRect(hwnd, NULL, TRUE);
+        UpdateWindow(hwnd);
+        ClipPolygons(hwnd, hdc, xLeft, xRight, yBottom, yTop, c);
+    }
+};
+#endif

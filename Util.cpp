@@ -17,7 +17,10 @@ struct Point {
     }
 
 };
-
+struct no2ta{
+    int x, y;
+    COLORREF color;
+};
 
 int Round(double x) {
     return static_cast<int>(x + 0.5);

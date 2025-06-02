@@ -6,14 +6,15 @@
 //#include "Circle.cpp"
 //#include "Filling.cpp"
 #include "Context.h"
+#include "File.cpp"
 #include <bits/stdc++.h>
-
+#include <omp.h>
 using namespace std;
 static int LCurrentDrawMode = 0,LCounter=0,RCurrentDrawMode=0,RCounter=0;
 
-static COLORREF bgColor = RGB(255, 255, 255);
+ COLORREF bgColor = RGB(255, 255, 255);
 static COLORREF PColor = RGB(0, 0, 0);
-COLORREF FColor = RGB(255, 255, 255);
+COLORREF FColor = RGB(0, 0, 255);
 static HCURSOR CURC = LoadCursor(NULL, IDC_ARROW);
 static  Point RPoints[1000], LPoints[1000];
 vector<Point> points;
@@ -21,6 +22,8 @@ bool isDrawing = true;
 Point ptStart = {0, 0};
 Point ptEnd = {0, 0};
 Point prevPtEnd={0,0};
+
+
 LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 {
     HDC hdc;
@@ -82,6 +85,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 //                    LCurrentDrawMode = 0, RCurrentDrawMode = 0;
                     points.clear();
                     clippingPoints.clear();
+                    clippingPolygons.clear();
                     break;
 //                case 912:
 
@@ -144,6 +148,27 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     SetCapture(hwnd);
                     context.setClippingStrategy(new LineClippingStrategy);
                     break;
+                case 222:
+                    CURC = LoadCursor(NULL, IDC_CROSS);
+                    SetCursor(CURC);
+                    isClipping=true;
+                    SetCapture(hwnd);
+                    context.setClippingStrategy(new PolygonClipping);
+                    break;
+                case 299:
+                    fillStrategy = new FillQuarterCircleWithLines();
+                    context.setFillStrategy(fillStrategy);
+                    LCurrentDrawMode = 299;
+                    break;
+                case 1099:
+                    fillStrategy = new HermiteWindowFilling();
+                    context.setFillStrategy(fillStrategy);
+                    LCurrentDrawMode = 299;
+                    break;
+                case 2000:
+                    fillStrategy = new BezierWindowFilling();
+                    context.setFillStrategy(fillStrategy);
+                    LCurrentDrawMode = 299;
 
                 case 100:
                     fillStrategy = new RecFloodFillStrategy();
@@ -207,10 +232,10 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     RCurrentDrawMode = 199;
                     break;
                 case 913:
-//                    SavePixels(hwnd, bgColor, "pixels.txt");
+                    save(hwnd);
                     break;
                 case 914:
-//                    LoadPixels(hwnd, "pixels.txt");
+                    load(hwnd);
                     break;
 
             }
@@ -318,10 +343,18 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
             if (req == LCounter) {
                 vector<Point> copy(points);
                 hdc = GetDC(hwnd);
-                thread([=](){
-                    context.draw(hdc, copy, PColor);
-                    ReleaseDC(hwnd, hdc);
-                }).detach();
+                if (LCurrentDrawMode % 100 == 99) {
+                    thread([=](){
+                        context.fill(hdc, copy, PColor, FColor);
+                        ReleaseDC(hwnd, hdc);
+                    }).detach();
+                }
+                else {
+                    thread([=](){
+                        context.draw(hdc, copy, PColor);
+                        ReleaseDC(hwnd, hdc);
+                    }).detach();
+                }
                 points.clear();
                 LCounter = 0;
             }
@@ -430,10 +463,13 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(PolygonMenu, MF_STRING, 1003, "General Fill");
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU FillMenu = CreatePopupMenu();
-    AppendMenu(FillMenu, MF_STRING, 100, "FloodFillRecursive");
-    AppendMenu(FillMenu, MF_STRING, 101, "FloodFillWithStack");
-    AppendMenu(FillMenu, MF_STRING, 102, "FloodFillWithQueue");
-    AppendMenu(FillMenu, MF_STRING, 303, "FillBarycentric");
+    AppendMenu(FillMenu, MF_STRING, 100, "Flood Fill Recursive");
+    AppendMenu(FillMenu, MF_STRING, 101, "Flood Fill With Stack");
+    AppendMenu(FillMenu, MF_STRING, 102, "Flood Fill With Queue");
+    AppendMenu(FillMenu, MF_STRING, 303, "Fill Barycentric");
+    AppendMenu(FillMenu, MF_STRING, 299, "Fill Quarter Circle With Lines");
+    AppendMenu(FillMenu, MF_STRING, 1099, "Fill Window using Hermite Curves");
+    AppendMenu(FillMenu, MF_STRING, 2000, "Fill Window using Bezier Curves");
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU CursorMenu = CreatePopupMenu();
     AppendMenu(CursorMenu, MF_STRING, 901, "Arrow");

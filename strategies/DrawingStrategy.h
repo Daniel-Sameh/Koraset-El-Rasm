@@ -117,8 +117,12 @@ public:
 
 class CardinalSpline : public DrawingStrategy {
 public:
-    void draw(HDC hdc, vector<Point> p, COLORREF c) override{
-        DrawCardinalSpline(hdc, p, c, 1000, 1);
+    void draw(HDC hdc, vector<Point> p, COLORREF color) override{
+        HWND hwnd = WindowFromDC(hdc);
+        MessageBox(hwnd,"Please enter the tension factor in the console", "Cardinal Spline Tension", MB_HELP);
+        double c=1;
+        cin>>c;
+        DrawCardinalSpline(hdc, p, color, 1000, c);
     }
     void showHelp(HWND hwnd) override{
         MessageBox(hwnd, "Click left up to 8 points then click right to draw a Cardinal Spline curve.", "Cardinal Spline Curve Drawing", MB_OK | MB_ICONINFORMATION);
