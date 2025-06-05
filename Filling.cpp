@@ -164,7 +164,7 @@ void FillWithBezierCurves(HDC hdc, int xLeft, int xRight, int yBottom, int yTop,
         swap(yBottom, yTop);
     }
     for(int i=xLeft; i<=xRight; ++i){
-        vector<Point>points={{(double) i, (double) yBottom},{(double) i, (double) ((yBottom+yTop)/2.0)},{(double)i, (double)yTop}};
+        vector<Point>points={{(double) i, (double) yBottom}, {(double) i, (double) ((yBottom+yTop)/2.0)},{(double)i, (double)yTop}};
         DrawBezierCurve(hdc, points, fillColor, 1000);
     }
 }

@@ -1,7 +1,3 @@
-//
-// Created by Daniel Sameh on 6/5/2025.
-//
-
 #ifndef PROJECT_ELLIPSE_H
 #define PROJECT_ELLIPSE_H
 #include "../Ellipse.cpp"
