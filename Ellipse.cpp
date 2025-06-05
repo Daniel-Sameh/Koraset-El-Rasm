@@ -22,46 +22,30 @@ void drawEllipsePolar(HDC hdc,Point p1, int a, int b,COLORREF c) {
         theta += step;
     }
 }
+
+double calc(double x, double y, double a, double b) {
+    return (b * b * x * x) + (a * a * y * y) - (a * a * b * b);
+}
+
 void DrawMidpointEllipse(HDC hdc, Point p1, int a, int b, COLORREF c) {
-    int x = 0;
-    int y = b;
-
-    int a2 = a * a;
-    int b2 = b * b;
-
-    int twoa2 = 2 * a2;
-    int twob2 = 2 * b2;
-
-    int dx = 0;
-    int dy = twoa2 * y;
-
-    // Region 1
-    int p = b2 - (a2 * b) + (a2 / 4);
-    while (dx < dy) {
-        drawEllipsePoints(hdc, p1, x, y, c);
-        x++;
-        dx += twob2;
-        if (p < 0) {
-            p += b2 + dx;
-        } else {
+    auto [xc, yc] = p1;
+    double x = 0;
+    double y = b;
+    drawEllipsePoints(hdc, p1, x, y, c);
+    while (2 * b * b * x < 2 * a * a * y) {
+        double d = calc(x + 1, y - 0.5, a, b);
+        if (d > 0) {
             y--;
-            dy -= twoa2;
-            p += b2 + dx - dy;
         }
-    }
-
-    // Region 2
-    p = b2 * (x + 0.5) * (x + 0.5) + a2 * (y - 1) * (y - 1) - a2 * b2;
-    while (y >= 0) {
+        x++;
         drawEllipsePoints(hdc, p1, x, y, c);
-        y--;
-        dy -= twoa2;
-        if (p > 0) {
-            p += a2 - dy;
-        } else {
+    }
+    while (y >= 0) {
+        double d = calc(x + 0.5, y - 1, a, b);
+        if (d <= 0) {
             x++;
-            dx += twob2;
-            p += a2 - dy + dx;
         }
+        y--;
+        drawEllipsePoints(hdc, p1, x, y, c);
     }
 }
