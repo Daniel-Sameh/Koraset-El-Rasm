@@ -271,7 +271,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
             HBRUSH hBrush = CreateSolidBrush(bgColor);
             FillRect(hdc, &rc, hBrush);
             DeleteObject(hBrush);
-        break;
+            break;
         }
 
         case WM_MOUSEMOVE:

@@ -55,10 +55,10 @@ bool cohenClipping(Point&p1, Point&p2, double xLeft, double xRight, double yBott
 }
 ///Main Clip:
 void clipWindow(HWND hwnd, HDC hdc, double xLeft, double xRight, double yBottom, double yTop, COLORREF c, bool draw=true){
-    if (clippingPoints.empty()){
-        MessageBox(hwnd, "Please draw lines to clip", "No lines was found", MB_ICONSTOP);
-        return;
-    }
+//    if (clippingPoints.empty()){
+//        MessageBox(hwnd, "Please draw lines to clip", "No lines was found", MB_ICONSTOP);
+//        return;
+//    }
     vector<Line>newPoints;
     bool clip=false;
     for(auto&[p1,p2,c]:clippingPoints){
