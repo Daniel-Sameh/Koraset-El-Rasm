@@ -2,9 +2,6 @@
 #include<math.h>
 #include <stack>
 #include <queue>
-//#include "Util.cpp"
-//#include "Circle.cpp"
-//#include "Filling.cpp"
 #include "Context.h"
 #include "File.cpp"
 #include <bits/stdc++.h>
@@ -160,8 +157,17 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     context.setFillStrategy(fillStrategy);
                     LCurrentDrawMode = 299;
                     break;
+                case 298:
+                    fillStrategy = new FillQuarterCircleWithCircles();
+                    context.setFillStrategy(fillStrategy);
+                    LCurrentDrawMode = 299;
+                    break;
                 case 1099:
-                    fillStrategy = new HermiteWindowFilling();
+                    MessageBoxEx(NULL, "Please enter the slope for each end of the lines in the console.", "Hermite Curve Slope", MB_OK | MB_ICONINFORMATION, 0);
+                    cout<<"Enter the slope for each end of the lines: ";
+                    double slopeLeft, slopeRight;
+                    cin >> slopeLeft >> slopeRight;
+                    fillStrategy = new HermiteWindowFilling(slopeLeft,slopeRight);
                     context.setFillStrategy(fillStrategy);
                     LCurrentDrawMode = 299;
                     break;
@@ -169,6 +175,7 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     fillStrategy = new BezierWindowFilling();
                     context.setFillStrategy(fillStrategy);
                     LCurrentDrawMode = 299;
+                    break;
 
                 case 100:
                     fillStrategy = new RecFloodFillStrategy();
@@ -194,6 +201,21 @@ LRESULT WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
                     drawingStrategy = new QuadraticCurve();
                     context.setDrawingStrategy(drawingStrategy);
                     LCurrentDrawMode = 301;
+                    break;
+                case 305:
+                    drawingStrategy = new EllipseDirect();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 305;
+                    break;
+                case 306:
+                    drawingStrategy = new EllipsePolar();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 306;
+                    break;
+                case 307:
+                    drawingStrategy = new MidpointEllipse();
+                    context.setDrawingStrategy(drawingStrategy);
+                    LCurrentDrawMode = 307;
                     break;
                 case 801:
                     drawingStrategy = new MidPointBezier();
@@ -425,9 +447,7 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     HWND hwnd = CreateWindow("MyClass", "Koraset El Rasm", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hi, 0);
 
-
     ///////////////////////////////////////////////////////////////////////////////////////////
-
     HMENU DrawMenu = CreatePopupMenu();
     HMENU LineMenu = CreatePopupMenu();
     AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)LineMenu, "Line");
@@ -435,7 +455,6 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(LineMenu, MF_STRING, 205, "Parametric Line");
     AppendMenu(LineMenu, MF_STRING, 206, "Bresenham Line");
     AppendMenu(LineMenu, MF_STRING, 207, "DDA Line");
-
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU CircleMenu = CreatePopupMenu();
@@ -446,6 +465,7 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(CircleMenu, MF_STRING, 202, "Polar Iterative");
     AppendMenu(CircleMenu, MF_STRING, 203, "Bresenham");
     AppendMenu(CircleMenu, MF_STRING, 204, "Bresenham DDA");
+
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU CurveMenu = CreatePopupMenu();
     AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)CurveMenu, "Curve");
@@ -454,6 +474,7 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(CurveMenu, MF_STRING, 801, "MidPoint Bezier");
     AppendMenu(CurveMenu, MF_STRING, 802, "Recursive Bezier");
     AppendMenu(CurveMenu, MF_STRING, 400, "Cardinal Spline");
+
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU PolygonMenu = CreatePopupMenu();
     AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)PolygonMenu, "Polygon");
@@ -461,6 +482,15 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(PolygonMenu, MF_STRING, 1001, "Polygon");
     AppendMenu(PolygonMenu, MF_STRING, 1002, "Convex Fill");
     AppendMenu(PolygonMenu, MF_STRING, 1003, "General Fill");
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    HMENU EllipseMenu = CreatePopupMenu();
+    AppendMenu(DrawMenu, MF_POPUP, (UINT_PTR)EllipseMenu, "Ellipse");
+
+    AppendMenu(EllipseMenu, MF_STRING, 305, "Direct");
+    AppendMenu(EllipseMenu, MF_STRING, 306, "Polar");
+    AppendMenu(EllipseMenu, MF_STRING, 307, "Midpoint");
+
     ///////////////////////////////////////////////////////////////////////////////////////////
     HMENU FillMenu = CreatePopupMenu();
     AppendMenu(FillMenu, MF_STRING, 100, "Flood Fill Recursive");
@@ -468,6 +498,7 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR cmd, int nsh) {
     AppendMenu(FillMenu, MF_STRING, 102, "Flood Fill With Queue");
     AppendMenu(FillMenu, MF_STRING, 303, "Fill Barycentric");
     AppendMenu(FillMenu, MF_STRING, 299, "Fill Quarter Circle With Lines");
+    AppendMenu(FillMenu, MF_STRING, 298, "Fill Quarter Circle With Circles");
     AppendMenu(FillMenu, MF_STRING, 1099, "Fill Window using Hermite Curves");
     AppendMenu(FillMenu, MF_STRING, 2000, "Fill Window using Bezier Curves");
     ///////////////////////////////////////////////////////////////////////////////////////////

@@ -60,7 +60,7 @@ Point RecBezier(vector<Point> &arr, int l, int r, double t) {
 }
 
 void DrawBezierCurve(HDC hdc, vector<Point> &arr, COLORREF c, int num) {
-    double step = (double) 1 / num;
+    double step = (double) 1.0 / num;
     for (double t = 0; t < 1; t += step) {
         Point p = RecBezier(arr, 0, arr.size() - 1, t);
         SetPixel(hdc, Round(p.x), Round(p.y), c);
@@ -111,4 +111,49 @@ void DrawCardinalSpline(HDC hdc,vector<Point> controlPoints,COLORREF color,int c
     Point arr[]={controlPoints[0] , slopes[1] ,controlPoints[1] , slopes[1]};
     DrawHermiteCurve(hdc,  arr, color,count);
 
+}
+
+void DrawHermiteCurve(HDC hdc, Point* arr, COLORREF baseColor, COLORREF highlightColor, int count) {
+    static int mat[][4] = {{2, 1, -2, 1}, {-3, -2, 3, -1}, {0, 1, 0, 0}, {1, 0, 0, 0}};
+    double step = 1.0 / count;
+    for (double t = 0; t < 1; t += step) {
+        Point p;
+        for (int i = 0; i < 2; ++i) {
+            int par[4];
+            double sum = 0;
+            double current = t * t * t;
+            for (int j = 0; j < 4; ++j) {
+                par[j] = 0;
+                for (int k = 0; k < 4; ++k) {
+                    if (i == 0) {
+                        par[j] += mat[j][k] * (int)arr[k].x;
+                    } else {
+                        par[j] += mat[j][k] * (int)arr[k].y;
+                    }
+                }
+                sum += par[j] * current;
+                current /= t;
+            }
+            if (i == 0)
+                p.x = sum;
+            else
+                p.y = sum;
+        }
+
+        int rBase = GetRValue(baseColor);
+        int gBase = GetGValue(baseColor);
+        int bBase = GetBValue(baseColor);
+
+        int rHighlight = GetRValue(highlightColor);
+        int gHighlight = GetGValue(highlightColor);
+        int bHighlight = GetBValue(highlightColor);
+
+        int r = rBase + t * (rHighlight - rBase);
+        int g = gBase + t * (gHighlight - gBase);
+        int b = bBase + t * (bHighlight - bBase);
+
+        COLORREF shadedColor = RGB(r, g, b);
+
+        SetPixel(hdc, Round(p.x), Round(p.y), shadedColor);
+    }
 }

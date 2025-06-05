@@ -11,6 +11,7 @@
 #include "../headers/Line.h"
 #include "../headers/Clipping.h"
 #include "../headers/Polygon.h"
+#include "../headers/Ellipse.h"
 using namespace std;
 
 class DrawingStrategy {
@@ -84,7 +85,48 @@ public:
         MessageBox(hwnd, "Click and drag to draw a circle using the Polar Iterative method.", "Circle Drawing", MB_OK | MB_ICONINFORMATION);
     }
 };
-
+class EllipseDirect : public DrawingStrategy{
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) override{
+        auto [x1, y1] = p[0];
+        auto [x2, y2] = p[1];
+        auto [x3,y3]  = p[2];
+        int a = (int) sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+        int b = (int) sqrt(pow(x1 - x3, 2) + pow(y1 - y3, 2));
+        drawEllipseDirect(hdc,p[0],a,b,c);
+    }
+    void showHelp(HWND hwnd) override{
+        MessageBox(hwnd, "Click three times first for the centre second for the radius a and third for radius b", "Ellipse Drawing", MB_OK | MB_ICONINFORMATION);
+    }
+};
+class EllipsePolar : public DrawingStrategy{
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) override{
+        auto [x1, y1] = p[0];
+        auto [x2, y2] = p[1];
+        auto [x3,y3]  = p[2];
+        int a = (int) sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+        int b = (int) sqrt(pow(x1 - x3, 2) + pow(y1 - y3, 2));
+        drawEllipsePolar(hdc,p[0],a,b,c);
+    }
+    void showHelp(HWND hwnd) override{
+        MessageBox(hwnd, "Click three times first for the centre second for the radius a and third for radius b", "Ellipse Drawing", MB_OK | MB_ICONINFORMATION);
+    }
+};
+class MidpointEllipse : public DrawingStrategy{
+public:
+    void draw(HDC hdc, vector<Point> p, COLORREF c) override{
+        auto [x1, y1] = p[0];
+        auto [x2, y2] = p[1];
+        auto [x3,y3]  = p[2];
+        int a = (int) sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+        int b = (int) sqrt(pow(x1 - x3, 2) + pow(y1 - y3, 2));
+        DrawMidpointEllipse(hdc,p[0],a,b,c);
+    }
+    void showHelp(HWND hwnd) override{
+        MessageBox(hwnd, "Click three times first for the centre second for the radius a and third for radius b", "Ellipse Drawing", MB_OK | MB_ICONINFORMATION);
+    }
+};
 class QuadraticCurve : public DrawingStrategy {
 public:
     void draw(HDC hdc, vector<Point> p, COLORREF c) override{

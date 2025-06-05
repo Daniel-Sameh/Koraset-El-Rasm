@@ -33,11 +33,11 @@ void save(HWND hwnd) {
     HDC memDC = CreateCompatibleDC(hdc);
 
     BITMAPINFO bmi = {};
-    bmi.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth       = width;
-    bmi.bmiHeader.biHeight      = -height;
-    bmi.bmiHeader.biPlanes      = 1;
-    bmi.bmiHeader.biBitCount    = 32;
+    bmi.bmiHeader.biSize= sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth= width;
+    bmi.bmiHeader.biHeight= -height;
+    bmi.bmiHeader.biPlanes= 1;
+    bmi.bmiHeader.biBitCount= 32;
     bmi.bmiHeader.biCompression = BI_RGB;
 
     void* no2tas = nullptr;
@@ -47,12 +47,12 @@ void save(HWND hwnd) {
     //btcopy el window fel bitmap
     ReleaseDC(hwnd, hdc);
 
-    std::vector<no2ta> saved;
+    vector<no2ta> saved;
 
-#pragma omp parallel
+    #pragma omp parallel
     {
-        std::vector<no2ta> local;
-#pragma omp for
+        vector<no2ta> local;
+        #pragma omp for
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 DWORD raw = ((DWORD*)no2tas)[y * width + x]; //el raw beb2a 1d fa bndrb el y*width 34an n3rf el height
@@ -67,8 +67,8 @@ void save(HWND hwnd) {
                     local.push_back({ x, y, c });
             }
         }
-#pragma omp critical
         //bngm3 kolo fel saved da
+        #pragma omp critical
         saved.insert(saved.end(), local.begin(), local.end());
     }
 

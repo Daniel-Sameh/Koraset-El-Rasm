@@ -93,18 +93,66 @@ void FillQuarterCircleLines(HDC hdc,Point p1,int r,COLORREF bc,COLORREF fc) {
     }
 }
 
-void FillWithHermiteCurves(HDC hdc, int xLeft, int xRight, int yBottom, int yTop, COLORREF fillColor){
+void FillQuarterCircleCircles(HDC hdc,Point p1,int r,COLORREF bc,COLORREF fc) {
+    DrawCircleBresenhamDDA(hdc,p1,r, bc);
+    cout<<"Enter The desired quarter:"<<endl;
+    cout<<"1 for Top right\n";
+    cout<<"2 for Top left\n";
+    cout<<"3 for Bottom left\n";
+    cout<<"4 for Bottom right\n";
+    int quarter;
+    cin>>quarter;
+    auto [xc,yc] = p1;
+    for (int nr = 0; nr < r; ++nr) {
+        int x = 0, y = nr;
+        while (x <= y) {
+            switch (quarter) {
+                case 1: // top right
+                    SetPixel(hdc, xc + x, yc - y, fc);
+                    SetPixel(hdc, xc + y, yc - x, fc);
+                    break;
+                case 2: // top left
+                    SetPixel(hdc, xc - x, yc - y, fc);
+                    SetPixel(hdc, xc - y, yc - x, fc);
+                    break;
+                case 3: // bottom left
+                    SetPixel(hdc, xc - x, yc + y, fc);
+                    SetPixel(hdc, xc - y, yc + x, fc);
+                    break;
+                case 4: // bottom right
+                    SetPixel(hdc, xc + x, yc + y, fc);
+                    SetPixel(hdc, xc + y, yc + x, fc);
+                    break;
+            }
+            x++;
+            y = Round(sqrt(nr * nr - x * x));
+        }
+    }
+}
+
+void FillWithHermiteCurves(HDC hdc, int xLeft, int xRight, int yBottom, int yTop, double slopeLeft, double slopeRight, COLORREF fillColor){
     if(xLeft>xRight){
         swap(xLeft, xRight);
     }
     if (yBottom > yTop)
         swap(yBottom, yTop);
 
-    #pragma omp parallel for shared(xLeft, xRight)
+    int rBase = GetRValue(fillColor);
+    int gBase = GetGValue(fillColor);
+    int bBase = GetBValue(fillColor);
+
+    int rHighlight = min(rBase + 50, 255); // Ensure values don't exceed 255
+    int gHighlight = min(gBase + 50, 255);
+    int bHighlight = min(bBase + 50, 255);
+
+    COLORREF highlightColor = RGB(rHighlight, gHighlight, bHighlight);
+
+//    #pragma omp parallel for shared(xLeft, xRight)
     for (int i=yBottom; i<=yTop; ++i){
-        Point p[]={{(double) xLeft,(double) i},{1,1},{(double) xRight,(double) i},{1,1}};
-        #pragma omp critical
-        DrawHermiteCurve(hdc,p,fillColor,2000);
+        Point p[]={{(double) xLeft,(double) i},{slopeLeft,slopeLeft},{(double) xRight,(double) i},{slopeRight,slopeRight}};
+
+//        #pragma omp critical
+        DrawHermiteCurve(hdc,p,fillColor,highlightColor,2000);
     }
 }
 
@@ -116,7 +164,7 @@ void FillWithBezierCurves(HDC hdc, int xLeft, int xRight, int yBottom, int yTop,
         swap(yBottom, yTop);
     }
     for(int i=xLeft; i<=xRight; ++i){
-        vector<Point>points={{(double) i, (double) yBottom}, {(double) i, (double) yTop}};
+        vector<Point>points={{(double) i, (double) yBottom},{(double) i, (double) ((yBottom+yTop)/2.0)},{(double)i, (double)yTop}};
         DrawBezierCurve(hdc, points, fillColor, 1000);
     }
 }

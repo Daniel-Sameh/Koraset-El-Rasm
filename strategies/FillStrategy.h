@@ -47,6 +47,16 @@ public:
     };
 };
 
+class FillQuarterCircleWithCircles: public FillStrategy {
+public:
+    void fill(HDC hdc, vector<Point> points, COLORREF borderColor, COLORREF fillColor){
+        auto [x1, y1] = points[0];
+        auto [x2, y2] = points[1];
+        int r = (int) sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+        FillQuarterCircleCircles(hdc,points[0],r,borderColor,fillColor);
+    };
+};
+
 class BarycentricFillStrategy : public FillStrategy {
 public:
     void fill(HDC hdc, vector<Point> points, COLORREF borderColor ,COLORREF fillColor){
@@ -56,9 +66,11 @@ public:
 };
 
 class HermiteWindowFilling: public FillStrategy{
+    double slopeLeft, slopeRight;
 public:
+    HermiteWindowFilling(double slopeLeft, double slopeRight): slopeLeft(slopeLeft), slopeRight(slopeRight) {}
     void fill(HDC hdc, vector<Point> points, COLORREF borderColor ,COLORREF fillColor){
-        FillWithHermiteCurves(hdc, points[0].x, points[1].x, points[0].y, points[1].y, fillColor);
+        FillWithHermiteCurves(hdc, points[0].x, points[1].x, points[0].y, points[1].y, slopeLeft, slopeRight, fillColor);
     }
 };
 class BezierWindowFilling: public FillStrategy{
